@@ -6,12 +6,22 @@ on:
       - main
 
 jobs:
-  s3_list:
+  aws-s3-list:
     runs-on: self-hosted
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
       
-      
-      - name: List S3 bucket contents
-        run: aws s3 ls
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+
+      - name: List objects in S3 bucket
+        run: aws s3 ls 
